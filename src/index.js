@@ -1,7 +1,7 @@
 
 'use strict'
 const Libp2p = require('libp2p')
-const IPFS = require('ipfs')
+const Ipfs = require('ipfs')
 
 const WebSocketStar = require('libp2p-websocket-star')
 const Bootstrap = require('libp2p-bootstrap')
@@ -131,6 +131,6 @@ const ipfsOptions = {
   }
 }
 
-const IpfsBundle = (options) => new IPFS({ ...ipfsOptions, ...options })
+const IpfsBundle = (options) => Ipfs.create({ ...ipfsOptions, ...options })
 
 module.exports = IpfsBundle
