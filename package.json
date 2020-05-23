@@ -1,6 +1,6 @@
 {
-  "name": "@tabcat/ipfs-bundle-t",
-  "version": "0.0.6",
+  "name": "@phillmac/ipfs-bundle-t",
+  "version": "0.0.7",
   "description": "custom browser bundle for ipfs node",
   "main": "src/index.js",
   "scripts": {},
@@ -11,12 +11,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tabcat/ipfs-bundle-t.git"
+    "url": "https://github.com/phillmac/ipfs-bundle-t.git"
   },
-  "author": "andersb@tuta.io",
+  "author": "phillmac@users.noreply.github.com",
   "license": "MIT",
   "dependencies": {
-    "ipfs": "^0.36.4",
-    "libp2p": "^0.25.4"
+    "ipfs": "^0.44.0",
+    "libp2p": "^0.27.8"
   }
 }
