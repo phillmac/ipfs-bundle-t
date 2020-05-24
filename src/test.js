@@ -1,11 +1,9 @@
-
 'use strict'
-const Libp2p = require('libp2p')
-const Ipfs = require('ipfs')
 
+const Libp2p = require('libp2p')
+const IPFS = require('ipfs')
 const Stardust = require('libp2p-stardust')
 const Bootstrap = require('libp2p-bootstrap')
-const SPDY = require('libp2p-spdy')
 const KadDHT = require('libp2p-kad-dht')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
@@ -31,9 +29,6 @@ const libp2pBundle = (opts) => {
   const peerBook = opts.peerBook
   const bootstrapList = opts.config.Bootstrap
 
-  const stardust = new Stardust({ id: peerInfo.id })
-  console.dir(stardust)
-
   // Build and return our libp2p node
   // n.b. for full configuration options, see https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md
   return new Libp2p({
@@ -47,24 +42,26 @@ const libp2pBundle = (opts) => {
     },
     modules: {
       transport: [
-        stardust
+        Stardust
       ],
       streamMuxer: [
-        MPLEX,
-        SPDY
+        MPLEX
       ],
       connEncryption: [
         SECIO
       ],
       peerDiscovery: [
-        Bootstrap,
-        stardust.discovery
+        Bootstrap
       ],
       dht: KadDHT
     },
     config: {
       peerDiscovery: {
         autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
+        mdns: {
+          interval: 10000,
+          enabled: true
+        },
         bootstrap: {
           interval: 30e3,
           enabled: true,
@@ -106,22 +103,67 @@ const libp2pBundle = (opts) => {
   })
 }
 
-const ipfsOptions = {
-  libp2p: libp2pBundle,
-  config: {
-    Addresses: {
-      Swarm: ['/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust/'],
-      API: '',
-      Gateway: ''
-    },
-    Discovery: {
+async function main () {
+  // Now that we have our custom libp2p bundle, let's start up the ipfs node!
+  const node = await IPFS.create({
+    libp2p: libp2pBundle,
+    config: {
+      Addresses: {
+        Swarm: ['/dns4/stardust.mkg20001.io/tcp/443/wss/p2p-stardust/'],
+        API: '',
+        Gateway: ''
+      },
+      Discovery: {
+      MDNS: {
+        Enabled: false,
+        Interval: 10
+      },
       webRTCStar: {
         Enabled: true
       }
+    },
+    Bootstrap: [
+      '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
+      '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
+      '/dns4/sfo-3.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
+      '/dns4/sgp-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
+      '/dns4/nyc-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
+      '/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
+      '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+      '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
+    ]
     }
-  }
+  })
+
+  // Lets log out the number of peers we have every 2 seconds
+  setInterval(async () => {
+    try {
+      const peers = await node.swarm.peers()
+      console.log(`The node now has ${peers.length} peers.`)
+    } catch (err) {
+      console.log('An error occurred trying to check our peers:', err)
+    }
+  }, 2000)
+
+  // Log out the bandwidth stats every 4 seconds so we can see how our configuration is doing
+  setInterval(async () => {
+    try {
+      const stats = await node.stats.bw()
+      console.log(`\nBandwidth Stats: ${JSON.stringify(stats, null, 2)}\n`)
+    } catch (err) {
+      console.log('An error occurred trying to check our stats:', err)
+    }
+  }, 4000)
+
+  setInterval(async () => {
+    try {
+      for await (const p of node.dht.findProvs('zdpuAuSAkDDRm9KTciShAcph2epSZsNmfPeLQmxw6b5mdLmq5')) {
+        console.dir(p)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }, 30 * 1000)
 }
 
-const IpfsBundle = (options) => Ipfs.create({ ...ipfsOptions, ...options })
-
-module.exports = IpfsBundle
+main()
