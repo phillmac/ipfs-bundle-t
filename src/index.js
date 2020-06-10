@@ -3,10 +3,10 @@
 const Libp2p = require('libp2p')
 const Ipfs = require('ipfs')
 
-const WebSocketStar = require('libp2p-websocket-star')
+const WStar = require('libp2p-webrtc-star')
 const Bootstrap = require('libp2p-bootstrap')
 const KadDHT = require('libp2p-kad-dht')
-const MPLEX = require('pull-mplex')
+const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 
 /**
@@ -30,10 +30,7 @@ const libp2pBundle = (opts) => {
   const peerBook = opts.peerBook
   const bootstrapList = opts.config.Bootstrap
 
-  // Create our WebSocketStar transport and give it our PeerId, straight from the ipfs node
-  const wsstar = new WebSocketStar({
-    id: peerInfo.id
-  })
+  const ws1 = new WStar({ wrtc: wrtc })
 
   // Build and return our libp2p node
   return new Libp2p({
@@ -46,9 +43,7 @@ const libp2pBundle = (opts) => {
       pollInterval: 5000
     },
     modules: {
-      transport: [
-        wsstar
-      ],
+        transport: [],
       streamMuxer: [
         MPLEX
       ],
@@ -56,8 +51,7 @@ const libp2pBundle = (opts) => {
         SECIO
       ],
       peerDiscovery: [
-        Bootstrap,
-        wsstar.discovery
+        Bootstrap
       ],
       dht: KadDHT
     },
@@ -74,8 +68,8 @@ const libp2pBundle = (opts) => {
       relay: {
         enabled: true,
         hop: {
-          enabled: true,
-          active: true
+          enabled: false,
+          active: false
         }
       },
       dht: {
@@ -86,9 +80,6 @@ const libp2pBundle = (opts) => {
           interval: 10e3, // This is set low intentionally, so more peers are discovered quickly. Higher intervals are recommended
           timeout: 2e3 // End the query quickly since we're running so frequently
         }
-      },
-      EXPERIMENTAL: {
-        pubsub: true
       }
     }
   })
@@ -105,7 +96,7 @@ const ipfsOptions = {
   },
   config: {
     Addresses: {
-      Swarm: ['/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star/'],
+      Swarm: ['/dns4/libp2p-rdv.vps.revolunet.com/tcp/443/wss/p2p-webrtc-star'],
       API: '',
       Gateway: ''
     },
@@ -119,14 +110,7 @@ const ipfsOptions = {
       }
     },
     Bootstrap: [
-      '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
-      '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
-      '/dns4/sfo-3.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
-      '/dns4/sgp-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu',
-      '/dns4/nyc-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
-      '/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
-      '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-      '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
+      '/dns4/ipfs-ws.vps.revolunet.com/tcp/443/wss/ipfs/QmSEbJSiV8TXyaG9oBJRs2sJ5sttrNQJvbSeGe7Vt8ZBqt'
     ]
   }
 }
