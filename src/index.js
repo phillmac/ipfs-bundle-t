@@ -61,7 +61,6 @@ async function run () {
       let prov = provs.shift()
       while (prov) {
         try {
-          console.dir(prov)
           const provId = typeof prov.id === 'string' ? prov.id : prov.id.toB58String()
           if (provId !== ipfsID && !(sPeers.some((p) => provId === p.peer))) {
             connectPeer(provId)
