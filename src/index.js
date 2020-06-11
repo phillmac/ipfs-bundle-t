@@ -43,7 +43,7 @@ const libp2pBundle = (opts) => {
       pollInterval: 5000
     },
     modules: {
-        transport: [],
+      transport: [],
       streamMuxer: [
         MPLEX
       ],

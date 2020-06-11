@@ -7,22 +7,31 @@ const DelegatedPeerRouter = require('libp2p-delegated-peer-routing')
 const DelegatedContentRouter = require('libp2p-delegated-content-routing')
 
 function getLibp2p ({ libp2pOptions, options, config, peerId }) {
+  libp2pOptions.config.dht = {
+    enabled: true,
+    kBucketSize: 20,
+    randomWalk: {
+      enabled: true,
+      interval: 10e3,
+      timeout: 2e3
+    }
+  }
   // Attempt to use any of the WebRTC versions available globally
   let electronWebRTC
   let wrtc
   try {
     electronWebRTC = require('electron-webrtc')()
   } catch (err) {
-    log('failed to load optional electron-webrtc dependency')
+    console.info('failed to load optional electron-webrtc dependency')
   }
   try {
     wrtc = require('wrtc')
   } catch (err) {
-    log('failed to load optional webrtc dependency')
+    console.info('failed to load optional webrtc dependency')
   }
 
   if (wrtc || electronWebRTC) {
-    log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
+    console.info(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
     set(libp2pOptions, 'config.transport.WebRTCStar.wrtc', wrtc || electronWebRTC)
     libp2pOptions.modules.transport.push(WebRTCStar)
   }

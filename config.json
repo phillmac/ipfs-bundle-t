@@ -1,21 +1,45 @@
 {
   "start": true,
-  "relay": {
-    "enabled": true,
-    "hop": {
-      "enabled": false
+  "Relay": {
+    "Enabled": true,
+    "Hop": {
+      "Enabled": false
     }
   },
-  "preload": {
-    "enabled": true
+  "dht": {
+    "enabled": true,
+    "kBucketSize": 20,
+    "randomWalk": {
+      "enabled": true,
+      "interval": 10e3,
+      "timeout": 2e3
+    }
+  },
+  "Preload": {
+    "Enabled": true
   },
   "EXPERIMENTAL": { "pubsub": true },
   "config": {
+    "dht": {
+    "enabled": true,
+    "kBucketSize": 20,
+    "randomWalk": {
+      "enabled": true,
+      "interval": 10e3,
+      "timeout": 2e3
+    }
+  },
+    "Discovery":{
+      "Autodial":true,
+      "MDNS":{"Enabled": false},
+      "WebRTC":{"Enabled": false}
+      },
     "Bootstrap": [
       "/dns4/ipfs-ws.vps.revolunet.com/tcp/443/wss/ipfs/QmSEbJSiV8TXyaG9oBJRs2sJ5sttrNQJvbSeGe7Vt8ZBqt"
     ],
     "Addresses": {
       "Swarm": [
+        "/ip4/0.0.0.0/tcp/4002",
         "/dns4/libp2p-rdv.vps.revolunet.com/tcp/443/wss/p2p-webrtc-star"
       ]
     }
