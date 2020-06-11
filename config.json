@@ -3,7 +3,7 @@
   "Relay": {
     "Enabled": true,
     "Hop": {
-      "Enabled": false
+      "Enabled": true
     }
   },
   "Preload": {
