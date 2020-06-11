@@ -22,16 +22,16 @@ function getLibp2p ({ libp2pOptions, options, config, peerId }) {
   try {
     electronWebRTC = require('electron-webrtc')()
   } catch (err) {
-    console.info('failed to load optional electron-webrtc dependency')
+    log('failed to load optional electron-webrtc dependency')
   }
   try {
     wrtc = require('wrtc')
   } catch (err) {
-    console.info('failed to load optional webrtc dependency')
+    log('failed to load optional webrtc dependency')
   }
 
   if (wrtc || electronWebRTC) {
-    console.info(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
+    log(`Using ${wrtc ? 'wrtc' : 'electron-webrtc'} for webrtc support`)
     set(libp2pOptions, 'config.transport.WebRTCStar.wrtc', wrtc || electronWebRTC)
     libp2pOptions.modules.transport.push(WebRTCStar)
   }
