@@ -10,7 +10,9 @@ function sleep (ms) {
 }
 
 process
-  .on('unhandledRejection', (reason, p) => {})
+  .on('unhandledRejection', (reason, p) => {
+    console.dir(p)
+  })
   .on('uncaughtException', err => {})
 
 async function run () {
@@ -54,7 +56,7 @@ async function run () {
             await sleep(30000)
           }
         } catch (err) {
-          console.error(err)
+          //console.error(err)
           await sleep(30000)
         }
       }
